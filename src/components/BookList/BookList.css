@@ -1,0 +1,72 @@
+/* src/components/BookList/BookList.css */
+
+.book-list-container {
+  padding: 20px;
+  background: #f4f4f4;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.book-list-container h3 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.book-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.book-list-table th,
+.book-list-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.book-list-table th {
+  background-color: #2d3e50;
+  color: white;
+  font-size: 1rem;
+}
+
+.book-list-table td {
+  vertical-align: middle;
+}
+
+.book-list-table img {
+  width: 50px;
+  height: auto;
+  border-radius: 5px;
+}
+
+.book-list-table button {
+  padding: 10px 15px;
+  margin-right: 10px;
+  background-color: #6c757d; /* Warna abu-abu gelap */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.book-list-table button:hover {
+  background-color: #495057; /* Warna lebih gelap saat hover */
+  transform: translateY(-2px); /* Efek 3D */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.book-list-table button:active {
+  transform: translateY(1px); /* Efek tombol aktif */
+}
+
+.book-list-empty {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #888;
+}

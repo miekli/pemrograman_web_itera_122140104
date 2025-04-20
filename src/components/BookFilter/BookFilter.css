@@ -1,0 +1,51 @@
+/* src/components/BookFilter/BookFilter.css */
+
+.book-filter-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .book-filter-container select,
+  .book-filter-container input {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+  
+  .book-filter-container select:focus,
+  .book-filter-container input:focus {
+    border-color: #00796b;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+  .book-filter-container select {
+    width: 150px;
+  }
+  
+  .book-filter-container input {
+    width: 300px;
+  }
+  
+  .book-filter-container select option {
+    padding: 10px;
+    background-color: #fff;
+  }
+  
+  .book-filter-container input::placeholder {
+    color: #888;
+  }
+  
+  .book-filter-container .filter-label {
+    font-weight: 600;
+    color: #333;
+  }
+  
