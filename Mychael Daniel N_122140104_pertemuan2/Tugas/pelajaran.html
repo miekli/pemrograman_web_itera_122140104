@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pengumpulan Tugas</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7fc;
+      padding: 20px;
+      position: relative;
+    }
+    h1 {
+      text-align: center;
+      color: #1a73e8;
+    }
+    .tugas-item {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .tugas-input textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    }
+    .tugas-input button,
+    .tugas-item button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .tugas-item button:hover {
+      background-color: #1558b0;
+    }
+    .deadline {
+      font-size: 0.9rem;
+      color: #d93025;
+    }
+    .link-input,
+    .add-tugas-form {
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .link-input input,
+    .add-tugas-form input,
+    .add-tugas-form textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .link-input button,
+    .add-tugas-form button {
+      padding: 10px 15px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .link-input button:hover,
+    .add-tugas-form button:hover {
+      background-color: #1558b0;
+    }
+    .deadline-note {
+      font-size: 0.9rem;
+      color: #1a73e8;
+      font-weight: bold;
+    }
+    .back-home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 15px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .back-home-btn:hover {
+      background-color: #1558b0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Kembali ke Home Button -->
+  <button class="back-home-btn" onclick="goHome()">Kembali ke Home</button>
+
+  <h1 id="subject-title"></h1>
+
+  <!-- Form Link Google Meet -->
+  <div class="link-input">
+    <input type="url" id="gmeet-link" placeholder="Tambahkan link Google Meet..." />
+    <button onclick="saveGmeetLink()">Simpan</button>
+    <div id="display-link"></div>
+  </div>
+
+  <!-- Form Tambah Tugas -->
+  <div class="add-tugas-form">
+    <h3>Tambah Tugas Baru</h3>
+    <textarea id="new-tugas-input" placeholder="Ketik jawaban sementara di sini..."></textarea><br>
+    <span class="deadline-note">Rencana kapan dikumpul:</span><br>
+    <input type="datetime-local" id="new-deadline-input" />
+    <button onclick="addTugas()">Tambah Tugas</button>
+  </div>
+
+  <!-- Tugas List -->
+  <div id="tugas-list"></div>
+
+  <script>
+    const index = localStorage.getItem("selectedSubjectIndex");
+    const subjects = JSON.parse(localStorage.getItem("subjectData"));
+
+    if (!subjects || index === null) {
+      document.body.innerHTML = "<h2>Data tidak ditemukan. Kembali ke halaman utama.</h2>";
+      throw new Error("Data tidak ditemukan.");
+    }
+
+    const subject = subjects[index];
+    document.getElementById("subject-title").textContent = `Tugas Mychael di Matkul ${subject.name}`;
+
+    const tugasList = document.getElementById("tugas-list");
+    const gmeetInput = document.getElementById("gmeet-link");
+    const displayLink = document.getElementById("display-link");
+
+    function renderGmeetLink() {
+      if (subject.gmeet) {
+        displayLink.innerHTML = `<p>Link Meet: <a href="${subject.gmeet}" target="_blank">${subject.gmeet}</a></p>`;
+      } else {
+        displayLink.innerHTML = "";
+      }
+    }
+
+    function saveGmeetLink() {
+      const link = gmeetInput.value.trim();
+      if (link) {
+        subject.gmeet = link;
+        localStorage.setItem("subjectData", JSON.stringify(subjects));
+        renderGmeetLink();
+      }
+    }
+
+    function getCountdownText(deadline) {
+      if (!deadline) return "Tidak ada deadline";
+      const now = new Date();
+      const end = new Date(deadline);
+      const diffMs = end - now;
+      if (diffMs <= 0) return "Sudah lewat deadline";
+      const minutes = Math.floor(diffMs / (1000 * 60));
+      return `Deadline dalam ${minutes} menit`;
+    }
+
+    function getStatusText(tugas) {
+      if (!tugas.answer || tugas.answer === "") return "Belum Dikumpul";
+      if (tugas.status === "selesai") return "Selesai";
+      return "Belum Dikumpul";
+    }
+
+    function renderTugas() {
+      tugasList.innerHTML = '';
+      subject.tugas.forEach((tugas, i) => {
+        const container = document.createElement("div");
+        container.classList.add("tugas-item");
+
+        let html = `
+          <div class="tugas-info">
+            <span>Tugas ${i + 1} - Status: ${getStatusText(tugas)}</span><br>
+            <span class="deadline">${getCountdownText(tugas.deadline)}</span>
+          </div>
+        `;
+
+        if (!tugas.answer || tugas.answer === "") {
+          html += `
+            <div class="tugas-input">
+              <textarea id="tugas-input-${i}" placeholder="Ketik jawabanmu di sini..."></textarea><br>
+              <span class="deadline-note">Rencana kapan dikumpul:</span><br>
+              <input type="datetime-local" id="deadline-input-${i}" />
+              <button onclick="submitJawaban(${i})">Submit</button>
+            </div>
+          `;
+        } else {
+          html += `
+            <p class="jawaban">Jawaban Sementara: ${tugas.answer}</p>
+            <p class="deadline">Tanggal: ${new Date(tugas.deadline).toLocaleString()}</p>
+          `;
+
+          if (tugas.status !== "selesai") {
+            html += `
+              <button onclick="editTugas(${i})">Edit</button>
+              <button onclick="deleteTugas(${i})">Hapus</button>
+              <button onclick="markAsCompleted(${i})">Kumpulkan</button>
+            `;
+          }
+        }
+
+        container.innerHTML = html;
+        tugasList.appendChild(container);
+      });
+    }
+
+    function addTugas() {
+      const newJawaban = document.getElementById("new-tugas-input").value.trim();
+      const newDeadline = document.getElementById("new-deadline-input").value;
+
+      if (newJawaban && newDeadline) {
+        subject.tugas.push({
+          answer: newJawaban,
+          status: "belum dikumpul",
+          deadline: newDeadline
+        });
+        localStorage.setItem("subjectData", JSON.stringify(subjects));
+        renderTugas();
+      }
+    }
+
+    function submitJawaban(i) {
+      const textarea = document.getElementById(`tugas-input-${i}`);
+      const deadlineInput = document.getElementById(`deadline-input-${i}`);
+      const jawaban = textarea.value.trim();
+      const deadline = deadlineInput.value;
+
+      if (jawaban && deadline) {
+        subject.tugas[i] = {
+          answer: jawaban,
+          status: "belum dikumpul",
+          deadline
+        };
+        localStorage.setItem("subjectData", JSON.stringify(subjects));
+        renderTugas();
+      }
+    }
+
+    function editTugas(i) {
+      const current = subject.tugas[i].answer;
+      const newJawaban = prompt("Edit jawaban:", current);
+      if (newJawaban !== null) {
+        subject.tugas[i].answer = newJawaban;
+        subject.tugas[i].status = "belum dikumpul";
+        localStorage.setItem("subjectData", JSON.stringify(subjects));
+        renderTugas();
+      }
+    }
+
+    function deleteTugas(i) {
+      subject.tugas[i] = {
+        answer: "",
+        status: "",
+        deadline: null
+      };
+      localStorage.setItem("subjectData", JSON.stringify(subjects));
+      renderTugas();
+    }
+
+    function markAsCompleted(i) {
+      subject.tugas[i].status = "selesai";
+      localStorage.setItem("subjectData", JSON.stringify(subjects));
+      renderTugas();
+    }
+
+    function goHome() {
+      window.location.href = "index.html";
+    }
+
+    renderGmeetLink();
+    renderTugas();
+  </script>
+</body>
+</html>
