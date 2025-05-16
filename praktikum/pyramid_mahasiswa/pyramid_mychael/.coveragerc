@@ -1,3 +1,0 @@
-[run]
-source = pyramid_mychael
-omit = pyramid_mychael/test*
