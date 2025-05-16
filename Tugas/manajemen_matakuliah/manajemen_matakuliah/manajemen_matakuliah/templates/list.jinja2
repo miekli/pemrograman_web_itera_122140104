@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daftar Matakuliah</title>
+</head>
+<body>
+    <h1>Daftar Matakuliah</h1>
+    <a href="{{ request.route_url('create_matakuliah') }}">Tambah Matakuliah</a>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Kode</th>
+                <th>Nama</th>
+                <th>SKS</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mk in matakuliah %}
+            <tr>
+                <td>{{ mk.id }}</td>
+                <td>{{ mk.kode }}</td>
+                <td>{{ mk.nama }}</td>
+                <td>{{ mk.sks }}</td>
+                <td>
+                    <a href="{{ request.route_url('update_matakuliah', id=mk.id) }}">Edit</a> |
+                    <a href="{{ request.route_url('delete_matakuliah', id=mk.id) }}" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
